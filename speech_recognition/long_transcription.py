@@ -1,6 +1,6 @@
 import io
 
-def transcribe_gcs(gcs_uri, sentence_nr, file_name):
+def transcribe(gcs_uri):
     """Asynchronously transcribes the audio file specified by the gcs_uri."""
     from google.cloud import speech
     from google.cloud.speech import enums
@@ -18,6 +18,23 @@ def transcribe_gcs(gcs_uri, sentence_nr, file_name):
     print('Waiting for operation to complete...')
     response = operation.result(timeout=90)
 
+    return response
+
+def transcribe_gcs_detailed(gcs_uri, sentence_nr, file_name):
+   
+    response = transcribe(gcs_uri)
+    # Each result is for a consecutive portion of the audio. Iterate through
+    # them to get the transcripts for the entire audio file.
+    
+    with io.open(file_name, 'a', encoding="utf-8") as out:
+        out.write('#{0}\n'.format(sentence_nr))
+        for result in response.results:
+            out.write('{0}\n'.format(result.alternatives[0].transcript.strip()))
+            out.write('{0}\n'.format(result.alternatives[0].confidence))
+
+def transcribe_gcs(gcs_uri, sentence_nr, file_name):
+    
+    response = transcribe(gcs_uri)
     # Each result is for a consecutive portion of the audio. Iterate through
     # them to get the transcripts for the entire audio file.
     
@@ -35,11 +52,6 @@ def transcribe_gcs(gcs_uri, sentence_nr, file_name):
         highest_confidence_sentence = last_sentence[0]
     
     with io.open(file_name, 'a', encoding="utf-8") as out:
-        # out.write('{0}\n'.format(sentence_nr))
-        # out.write('{0}\n'.format(first_sentence[0]))
-        # out.write('{0}\n'.format(first_sentence[1]))
-        # out.write('{0}\n'.format(last_sentence[0]))
-        # out.write('{0}\n'.format(last_sentence[1]))
         out.write('{0}\n'.format(highest_confidence_sentence))
 
 def select_highest_confidence_alternative(result):

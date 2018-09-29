@@ -1,29 +1,36 @@
-from speech_recognition.long_transcription import transcribe_gcs
+from speech_recognition.long_transcription import transcribe_gcs, transcribe_gcs_detailed
 import os
 import io
 import difflib
 
 output_file = 'data/output.txt'
+output_detailed_file = 'data/output_detailed.md'
 original_file = 'data/original.txt'
 diff_file = 'data/diff.txt'
+gs_files = 'gs://lt-dictation-to-text/sentences/{0}.flac'
+audio_files_count = 35
 
-def upload_data_to_gc():
-    print('Make sure your audio files are already uploaded to GCP')
+def setup():
+    print('##### SET PATH TO GOOGLE SERVICE USER JSON FILE #####')
+    print('SET GOOGLE_APPLICATION_CREDENTIALS=[PATH_to_google_service_account_json]\n')
+    print('#####      UPLOAD FILES TO GOOGLE STORAGE       #####')
+    print('gsutil -m cp -r data/sentences gs://your_bucket/sentences\n')
 
-def transcribe():
+def transcribe(transcription_function, results_file_name):
     print('Start transcribing')
+    print('Transcription function ' + transcription_function.__name__)
     
-    io.open(output_file, 'w').close()
+    io.open(results_file_name, 'w').close()
 
-    for i in range(35):
-        file_name = 'gs://lt-dictation-to-text/sentences/{0}.flac'.format(i)
+    for i in range(audio_files_count):
+        file_name = gs_files.format(i)
         print(file_name)
-        transcribe_gcs(file_name, i, output_file)
+        transcription_function(file_name, i, results_file_name)
 
-    print('Transcription results written to ' + output_file)
+    print('Transcription results written to ' + results_file_name)
     print('End transcribing')
 
-def compare_source_with_results():
+def compare_original_with_transcribed():
     print('Start comparing')
 
     io.open(diff_file, 'w').close()
@@ -38,7 +45,22 @@ def compare_source_with_results():
     print('Diff results written to ' + diff_file)
     print('End comparing')
 
+def clean_source_for_detailed_analysis():
+    print('Start cleaning source file')
+    print('End cleaning source file')
+    #clean original file to focus only on words (no whitespaces and no extra symbols)
+    #words written correctly
+    #words misspelled
+    #without lower-upper case
+
+def create_word_level_statistics():
+    print('Start creating statistics')
+    print('End creating statistics')
+
 if __name__ == "__main__":
-    upload_data_to_gc()
-    #transcribe()
-    compare_source_with_results()
+    setup()
+    # transcribe(transcribe_gcs, output_file)
+    # transcribe(transcribe_gcs_detailed, output_detailed_file) 
+    # compare_original_with_transcribed()
+    clean_source_for_detailed_analysis()
+    create_word_level_statistics()
