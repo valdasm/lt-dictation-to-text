@@ -1,3 +1,5 @@
+#Transcribes audio files up to one minute length
+
 import io
 import os
 
@@ -15,7 +17,7 @@ file_name = os.path.join(
     os.pardir,
     'data',
     'sentences',
-    '10.flac')
+    '0.flac')
 
 print(file_name)
 
@@ -36,3 +38,4 @@ response = client.recognize(config, audio)
 
 for result in response.results:
     print('Transcript: {}'.format(result.alternatives[0].transcript))
+    print('Confidence: {}'.format(result.alternatives[0].confidence))

@@ -1,4 +1,6 @@
-def transcribe_gcs(gcs_uri):
+import io
+
+def transcribe_gcs(gcs_uri, sentence_nr, file_name):
     """Asynchronously transcribes the audio file specified by the gcs_uri."""
     from google.cloud import speech
     from google.cloud.speech import enums
@@ -8,8 +10,8 @@ def transcribe_gcs(gcs_uri):
     audio = types.RecognitionAudio(uri=gcs_uri)
     config = types.RecognitionConfig(
         encoding=enums.RecognitionConfig.AudioEncoding.FLAC,
-        sample_rate_hertz=16000,
-        language_code='en-US')
+        sample_rate_hertz=44100,
+        language_code='lt-LT')
 
     operation = client.long_running_recognize(config, audio)
 
@@ -18,7 +20,35 @@ def transcribe_gcs(gcs_uri):
 
     # Each result is for a consecutive portion of the audio. Iterate through
     # them to get the transcripts for the entire audio file.
-    for result in response.results:
-        # The first alternative is the most likely one for this portion.
-        print(u'Transcript: {}'.format(result.alternatives[0].transcript))
-        print('Confidence: {}'.format(result.alternatives[0].confidence))
+    
+    if (not response.results) and  (len(response.result) < 2):
+        print('Empty or not complete result set. Expecting at least two transcribed sentences.')
+        return
+
+    first_sentence = select_highest_confidence_alternative(response.results[0])
+    last_sentence = select_highest_confidence_alternative(response.results[-1])
+  
+    highest_confidence_sentence = ''
+    if (first_sentence[1] > last_sentence[1]):
+        highest_confidence_sentence = first_sentence[0]
+    else:
+        highest_confidence_sentence = last_sentence[0]
+    
+    with io.open(file_name, 'a', encoding="utf-8") as out:
+        # out.write('{0}\n'.format(sentence_nr))
+        # out.write('{0}\n'.format(first_sentence[0]))
+        # out.write('{0}\n'.format(first_sentence[1]))
+        # out.write('{0}\n'.format(last_sentence[0]))
+        # out.write('{0}\n'.format(last_sentence[1]))
+        out.write('{0}\n'.format(highest_confidence_sentence))
+
+def select_highest_confidence_alternative(result):
+    highest_confidence = 0.0
+    sentence = ''
+    for alt in result.alternatives:
+        if alt.confidence > highest_confidence:
+            highest_confidence = alt.confidence
+            sentence = alt.transcript.strip()
+
+    return (sentence, highest_confidence)
+        
