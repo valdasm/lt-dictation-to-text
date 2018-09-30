@@ -1,11 +1,14 @@
 # lt-dictation-to-text
 
-#### Data
+# Data
 **data\sentences**
-Single file contains single sentence whithout repetitions
+
+Single file contains single audio sentence whithout repetitions. Used for further comparison analysis.
 
 **data\sentences_repeated**
-Here we have dictation, full sentence at the beginning and at the end + phrase repetitions. In two files there is a blend between a sentence and repetition. Hence Google picks
+
+Here we have dictation, full sentence at the beginning and at the end + phrase repetitions. Not used for further comparison analysis. Transcription and confidence levels can be found in data\raw_detailed_output.md
+
 An example of a single audio file:
 * This is a sentence about my city
 * This is
@@ -13,18 +16,14 @@ An example of a single audio file:
 * about my city
 * This is a sentence about my city
 
-#### Setup
+# Setup
 
-
-* gsutil required to move sentences to Google Storage
+* GCP plan required
+* gsutil required to move audio files to Google Storage
 * python -m venv venv
 * venv\Scripts\activate.bat
 * pip install -r requirements.txt
 * SET GOOGLE_APPLICATION_CREDENTIALS=[PATH_to_google_service_account_json]
 
-
-
 #### TODO
-(/) 1. Upload files to GS 
-(/) 2. https://cloud.google.com/speech-to-text/docs/async-recognize
-(/) 3. Split audio into files (sentences without repetitions)
+1. Use sentences_repeated and phrases for better results
