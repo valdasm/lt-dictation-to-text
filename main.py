@@ -85,10 +85,10 @@ if __name__ == "__main__":
         #(transcribe_gcs_single, output_file, gs_audio_path, 35),
 
         # Two times repeated sentence transcription 
-        (transcribe_gcs_repeated, output_file, gs_repeated_audio_path, 35)
+        (transcribe_gcs_repeated, output_file, gs_repeated_audio_path, 35),
 
         # Repeated sentences and phrases transcription + confidences; NOT USED in further analysis
-        #(transcribe_gcs_detailed, output_detailed_file, gs_repeated_audio_path, 35)
+        (transcribe_gcs_detailed, output_detailed_file, gs_repeated_audio_path, 35)
         ]
 
     setup()
