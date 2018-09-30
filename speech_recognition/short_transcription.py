@@ -1,5 +1,10 @@
-#Transcribes audio files up to one minute length
+"""
+https://cloud.google.com/speech-to-text/docs/quickstart-client-libraries
 
+Synchronous
+Transcribes audio files up to one minute 
+
+"""
 import io
 import os
 
