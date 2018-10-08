@@ -28,7 +28,8 @@ def setup_google():
     print('gsutil -m cp -r data/sentences gs://your_bucket/sentences\n')
 
 def setup_tilde():
-    print('##### SOMETHIGN ABOUT TILDE #####')
+    print('##### https://www.tilde.lt/snekos-technologijos #####')
+    print('##### Upload manually and receive results via email #####')
     
 
 def transcribe(transcription_function, results_file_name, gs_path, audio_files_count):
