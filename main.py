@@ -6,21 +6,26 @@ import difflib
 import re, string
 # from itertools import zip
 
-output_file = 'data/raw_output.txt'
-output_cleaned_file = 'data/cleaned_output.txt'
-output_detailed_file = 'data/raw_detailed_output.md'
 original_file = 'data/raw_original.txt'
 original_cleaned_file = 'data/cleaned_original.txt'
-diff_file = 'data/diff.txt'
+
+google_output_file = 'data/google/raw_output.txt'
+google_output_cleaned_file = 'data/google/cleaned_output.txt'
+google_output_detailed_file = 'data/google/raw_detailed_output.md'
+google_diff_file = 'data/google/diff.txt'
 gs_repeated_audio_path = 'gs://lt-dictation-to-text/sentences_repeated/{0}.flac'
 gs_audio_path = 'gs://lt-dictation-to-text/sentences/{0}.flac'
 
-def setup():
+def setup_google():
     print('##### SET PATH TO GOOGLE SERVICE USER JSON FILE #####')
     print('SET GOOGLE_APPLICATION_CREDENTIALS=[PATH_to_google_service_account_json]\n')
     print('#####      UPLOAD FILES TO GOOGLE STORAGE       #####')
     print('gsutil -m cp -r data/sentences_repeated gs://your_bucket/sentences_repeated\n')
     print('gsutil -m cp -r data/sentences gs://your_bucket/sentences\n')
+
+def setup_tilde():
+    print('##### SOMETHIGN ABOUT TILDE #####')
+    
 
 def transcribe(transcription_function, results_file_name, gs_path, audio_files_count):
     print('* Start transcription')
@@ -39,19 +44,19 @@ def transcribe(transcription_function, results_file_name, gs_path, audio_files_c
     print('Transcription results written to ' + results_file_name)
     print('* End transcription')
 
-def compare_files(file1, file2):
+def compare_files(file1, file2, result_file):
     print('* Start comparison using difflib')
 
-    io.open(diff_file, 'w').close()
+    io.open(result_file, 'w').close()
 
     diff = difflib.ndiff(
         io.open(file1, encoding="utf-8").readlines(),
         io.open(file2, encoding="utf-8").readlines())
 
-    with io.open(diff_file, 'w', encoding="utf-8") as out:
+    with io.open(result_file, 'w', encoding="utf-8") as out:
         out.write(''.join(diff))
 
-    print('Diff results written to ' + diff_file)
+    print('Diff results written to ' + result_file)
     print('* End comparison')
 
 def clean_files_for_word_analysis(raw_file, cleaned_file):
@@ -76,23 +81,21 @@ def evaluate_transcription(outputted_file, reference_file):
 
     print('* End evaluation')
 
-if __name__ == "__main__":
+def run_google_speech_recognition():
 
-    #transcription function, output_file, google storage path, files to process
+    setup_google()
 
     contexts = [
         # Single sentence transcription 
-        #(transcribe_gcs_single, output_file, gs_audio_path, 35),
+        #(transcribe_gcs_single, google_output_file, gs_audio_path, 35),
 
         # Two times repeated sentence transcription 
-        (transcribe_gcs_repeated, output_file, gs_repeated_audio_path, 35),
+        (transcribe_gcs_repeated, google_output_file, gs_repeated_audio_path, 35),
 
         # Repeated sentences and phrases transcription + confidences; NOT USED in further analysis
-        (transcribe_gcs_detailed, output_detailed_file, gs_repeated_audio_path, 35)
+        (transcribe_gcs_detailed, google_output_detailed_file, gs_repeated_audio_path, 35)
         ]
-
-    setup()
-    
+   
     # clean original file
     clean_files_for_word_analysis(original_file, original_cleaned_file)
 
@@ -100,6 +103,19 @@ if __name__ == "__main__":
     for i in range(len(contexts)): #range(0,2)
        transcribe(contexts[i][0], contexts[i][1], contexts[i][2], contexts[i][3]) 
      
-    clean_files_for_word_analysis(output_file, output_cleaned_file)
-    compare_files(original_cleaned_file, output_cleaned_file)
-    evaluate_transcription(output_cleaned_file, original_cleaned_file)
+    clean_files_for_word_analysis(google_output_file, google_output_cleaned_file)
+    compare_files(original_cleaned_file, google_output_cleaned_file, google_diff_file)
+    evaluate_transcription(google_output_cleaned_file, original_cleaned_file)
+
+def run_tilde_speech_recognition():
+    setup_tilde()
+
+
+if __name__ == "__main__":
+
+    # run_google_speech_recognition()
+    run_tilde_speech_recognition()
+
+    
+
+

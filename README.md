@@ -25,5 +25,6 @@ An example of a single audio file:
 * pip install -r requirements.txt
 * SET GOOGLE_APPLICATION_CREDENTIALS=[PATH_to_google_service_account_json]
 
-#### TODO
+# TODO
+
 1. Use sentences_repeated and phrases for better results
