@@ -16,6 +16,10 @@ google_diff_file = 'data/google/diff.txt'
 gs_repeated_audio_path = 'gs://lt-dictation-to-text/sentences_repeated/{0}.flac'
 gs_audio_path = 'gs://lt-dictation-to-text/sentences/{0}.flac'
 
+tilde_output_file = 'data/tilde/raw_output.txt'
+tilde_output_cleaned_file = 'data/tilde/cleaned_output.txt'
+tilde_diff_file = 'data/tilde/diff.txt'
+
 def setup_google():
     print('##### SET PATH TO GOOGLE SERVICE USER JSON FILE #####')
     print('SET GOOGLE_APPLICATION_CREDENTIALS=[PATH_to_google_service_account_json]\n')
@@ -109,7 +113,14 @@ def run_google_speech_recognition():
 
 def run_tilde_speech_recognition():
     setup_tilde()
-    clean_files_for_word_analysis(original_file, original_cleaned_file)
+
+    # Cleaning files from punctation marks
+    clean_files_for_word_analysis(tilde_output_file, tilde_output_cleaned_file)
+    compare_files(original_cleaned_file, tilde_output_cleaned_file, tilde_diff_file)
+    evaluate_transcription(tilde_output_cleaned_file, original_cleaned_file)
+   
+    # compare_files(original_file, tilde_output_file, tilde_diff_file)
+    # evaluate_transcription(tilde_output_file, original_file)
 
 if __name__ == "__main__":
 
