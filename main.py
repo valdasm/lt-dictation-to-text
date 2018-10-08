@@ -109,7 +109,7 @@ def run_google_speech_recognition():
 
 def run_tilde_speech_recognition():
     setup_tilde()
-
+    clean_files_for_word_analysis(original_file, original_cleaned_file)
 
 if __name__ == "__main__":
 
